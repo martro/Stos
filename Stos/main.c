@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+//UBUNTU
 typedef struct
 {
     int tablica;
