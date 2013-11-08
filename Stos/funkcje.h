@@ -7,12 +7,28 @@
 #ifndef FUNKCJE_H_INCLUDED
 #define FUNKCJE_H_INCLUDED
 
+typedef struct  //tutaj przechowywane sa parametry sygnalu
+{
+    double amplituda;
+    double fs; //czêstotliwoœæ sygna³u
+    double fp; //czêstotliwoœæ próbkowania
+    double fi; //przesuniêcie fazowe
+} parametry;
+
+
+typedef struct
+{
+    double *tab; //tablica przechowywania danych
+    double czas;
+    int rozmiar_tablicy;
+
+} dane_tablicy;
 
 void podkreslenie(void);
-int menu(void);
+int menu_glowne(void);
 
 
-int menu(void)
+int menu_glowne(void)
 {
     int wybor;
     char blad_odczytu;
