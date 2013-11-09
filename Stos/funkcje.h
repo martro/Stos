@@ -7,25 +7,29 @@
 #ifndef FUNKCJE_H_INCLUDED
 #define FUNKCJE_H_INCLUDED
 
-typedef struct  //tutaj przechowywane sa parametry sygnalu
+#define ROZMIAR_POCZ 100
+
+typedef struct  //parametry sygnalu
 {
     double amplituda;
-    double fs; //czêstotliwoœæ sygna³u
-    double fp; //czêstotliwoœæ próbkowania
-    double fi; //przesuniêcie fazowe
+    double fs;  //czestotliwosc sygnalu
+    double fp;  //czestottliwosc probkowania
+    double fi;  //przesuniecie fazowe
 } parametry;
 
 
 typedef struct
 {
-    double *tab; //tablica przechowywania danych
+    double *tab; //danych
     double czas;
-    int rozmiar_tablicy;
-
+    int rozmiar;
+    int pozycja;
 } dane_tablicy;
 
-void podkreslenie(void);
+
 int menu_glowne(void);
+void podkreslenie(void);
+void push(dane_tablicy *dtab, int wartosc);
 
 
 int menu_glowne(void)
@@ -73,5 +77,21 @@ int menu_glowne(void)
 void podkreslenie(void)
 {
     printf("\n-------------------\n");
+}
+
+void push(dane_tablicy *dtab, int wartosc)
+{
+    if (dtab->rozmiar==0)
+    {
+        dtab->tab = ((double *)malloc(sizeof(double) * ROZMIAR_POCZ));
+        dtab->rozmiar=ROZMIAR_POCZ;
+    }
+    if (dtab->pozycja >= dtab->rozmiar)
+    {
+        dtab->tab=realloc(dtab->tab,dtab->rozmiar*2*sizeof(double));
+        dtab->rozmiar=dtab->rozmiar*2;
+    }
+    dtab->tab[dtab->pozycja ++]=wartosc;
+
 }
 #endif // FUNKCJE_H_INCLUDED
