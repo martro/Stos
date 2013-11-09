@@ -13,20 +13,16 @@ int main(void)
     dtab->pozycja=0;
     dtab->rozmiar=0;
     dtab->czy_wygenerowany=0;
-    /*
-    dtab->czas=2;
-    param->amplituda=5;
-    param->fi=0;
-    param->fp=100;
-    param->fs=1;*/
+
 
 
     do
     {
-        dzialaj=menu_glowne();
-    } while (dzialaj);
+        dzialaj=menu_glowne(param,dtab);
+    }
+    while (dzialaj);
 
-return 0;
+    return 0;
 }
 
 

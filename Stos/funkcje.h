@@ -31,23 +31,29 @@ typedef struct
     int czy_wygenerowany;
 } dane_tablicy;
 
-int czy_wygenerowany_syg(dane_tablicy *dtab);
+
 void funkcja_menu_01();
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
-int menu_glowne(void);
+int menu_glowne(parametry *param,dane_tablicy *dtab);
 void podkreslenie(void);
 void push(dane_tablicy *dtab, double wartosc);
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void usun_tab(dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
 
-int czy_wygenerowany_syg(dane_tablicy *dtab)
-{
-    if (dtab->czy_wygenerowany)
-        printf("\nwygenerowany\n"); else
-        printf("\nniewygenerowany\n");
 
-return 0;
+
+void funkcja_menu_01(parametry *param,dane_tablicy *dtab)
+{
+    printf("GENEROWANIE SYGNALU\n\n");
+
+    if (dtab->czy_wygenerowany)
+    {
+        printf("Sygnal jest juz wygenerowany."
+               "Musisz usunac poprzedni przed generowaniem nowego.");
+    } else
+    generuj_sygnal(param,dtab);
+
 }
 
 void generuj_sygnal(parametry *param, dane_tablicy *dtab)
@@ -62,12 +68,7 @@ void generuj_sygnal(parametry *param, dane_tablicy *dtab)
     dtab->czy_wygenerowany=1;
 }
 
-void funkcja_menu_01()
-{
-    printf("\npierwsza funckja\n");
-}
-
-int menu_glowne(void)
+int menu_glowne(parametry *param,dane_tablicy *dtab)
 {
     int wybor;
     char blad_odczytu;
@@ -109,18 +110,18 @@ int menu_glowne(void)
     switch (wybor)
     {
     case 0:
-        {
-            break;
-        }
+    {
+        break;
+    }
     case 1:
-        {
-            funkcja_menu_01();
-            break;
-        }
+    {
+        funkcja_menu_01(param,dtab);
+        break;
+    }
     default:
-        {
-            break;
-        }
+    {
+        break;
+    }
     }
 
 
@@ -163,6 +164,13 @@ void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
     printf("czas sygnalu: ");
     scanf("%lf",&dtab->czas);
 
+    /*
+    dtab->czas=2;
+    param->amplituda=5;
+    param->fi=0;
+    param->fp=100;
+    param->fs=1;*/
+
 }
 
 void usun_tab(dane_tablicy *dtab)
@@ -178,17 +186,18 @@ void wyswietlanie(parametry *param,dane_tablicy *dtab)
     int i,dl_sygnalu;
     dl_sygnalu = dtab->czas * param->fp;
 
-    if (czy_wygenerowany_syg(dtab))
+    if (dtab->czy_wygenerowany)
     {
-    for (i=0; i<dl_sygnalu; i++)
-    {
-        printf("%d\t",i+1);
-        if (dtab->tab[i]>=0)
-            printf(" %f\n",dtab->tab[i]);
-        else
-            printf("%lf\n",dtab->tab[i]);
+        for (i=0; i<dl_sygnalu; i++)
+        {
+            printf("%d\t",i+1);
+            if (dtab->tab[i]>=0)
+                printf(" %f\n",dtab->tab[i]);
+            else
+                printf("%lf\n",dtab->tab[i]);
+        }
     }
-    }else
-    printf("\nsygnal nie wygenerowany\n");
+    else
+        printf("\nsygnal nie wygenerowany\n");
 }
 #endif // FUNKCJE_H_INCLUDED
