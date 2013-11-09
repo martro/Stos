@@ -13,7 +13,6 @@
 
 #define ROZMIAR_POCZ 100
 #define NAZWA_PLIKU 30
-#define DLUGOSC_BUFORA_ODCZYT 100
 
 typedef struct  //parametry sygnalu
 {
@@ -362,10 +361,11 @@ void usun_tab(dane_tablicy *dtab)
 void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
 {
     char nazwa[NAZWA_PLIKU];
-    char bufor[DLUGOSC_BUFORA_ODCZYT];
-
+    int licznik=0,nr_probki;
+    double odczyt;
+    dtab->pozycja=0;
     FILE * pFile;
-        if ((dtab->czy_wygenerowany)==0)
+    if ((dtab->czy_wygenerowany)==0)
     {
         printf("\nPODAJ NAZWE PLIKU: ");
         scanf("%s",nazwa);
@@ -376,15 +376,74 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
         {
             printf("\nOTWORZONO PLIK\n");
 
-            if (fgetc(pFile)=='*')
-                while (fgetc(pFile)!='\n');
+            while(fgetc(pFile)!=EOF)
+            {
+                fseek(pFile,-1,SEEK_CUR);
 
-            printf("\nznak: %c \n",fgetc(pFile));
-            fseek(pFile,-1,SEEK_CUR);
-            printf("\nznak: %c \n",fgetc(pFile));
-            printf("\nznak: %c \n",fgetc(pFile));
+                if (fgetc(pFile)=='*')
+                {
+                    while (fgetc(pFile)!='\n');
+                }
+                else
+                {
+                    fseek(pFile,-1,SEEK_CUR);
+                    if (fgetc(pFile)=='@')
+                    {
+                        fseek(pFile,-1,SEEK_CUR);
+                        while (fgetc(pFile)!=':');
+                        licznik++;
+                        switch(licznik)
+                        {
+                        case 1:
+                        {
+                            fscanf(pFile,"%lf",&param->amplituda);
+                            break;
+                        }
+                        case 2:
+                        {
+                            fscanf(pFile,"%lf",&param->fs);
+                            break;
+                        }
+                        case 3:
+                        {
+                            fscanf(pFile,"%lf",&param->fi);
+                            break;
+                        }
+                        case 4:
+                        {
+                            fscanf(pFile,"%lf",&param->fp);
+                            break;
+                        }
+                        case 5:
+                        {
+                            fscanf(pFile,"%lf",&dtab->czas);
+                            break;
+                        }
+                        default:
+                        {
+                            break;
+                        }
+                        }
 
+                    }
+                    else //jesli nie jest komentarzem i nie zaczyna sie od @
+                    {
+                        fscanf(pFile,"%d\t%lf",&nr_probki,&odczyt);
+                        printf("\n%d\t%lf.%d",nr_probki,odczyt,dtab->pozycja);
+                        push(dtab,odczyt);
+                        dtab->czy_wygenerowany=1;
+                        dtab->czy_parametry=1;
+                    }
+                }
+            }
+            printf("amplituda:                \t%lf\n",param->amplituda);
+            printf("czestotliwosc sygnalu:    \t%lf\n",param->fs);
+            printf("przesuniecie fazowe:      \t%lf\n",param->fi);
+            printf("czestotliwosc probkowania:\t%lf\n",param->fp);
+            printf("czas sygnalu:             \t%lf\n",dtab->czas);
             fclose (pFile);
+            printf("dtab: %d, %d",dtab->pozycja,dtab->rozmiar);
+
         }
     }
 
