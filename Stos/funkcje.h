@@ -28,15 +28,25 @@ typedef struct
     double czas;
     int rozmiar;
     int pozycja;
+    int czy_wygenerowany;
 } dane_tablicy;
 
-
+int czy_wygenerowany_syg(dane_tablicy *dtab);
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(void);
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void podkreslenie(void);
 void push(dane_tablicy *dtab, double wartosc);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
+
+int czy_wygenerowany_syg(dane_tablicy *dtab)
+{
+    if (dtab->czy_wygenerowany)
+        printf("\nwygenerowany\n"); else
+        printf("\nniewygenerowany\n");
+
+return 0;
+}
 
 void generuj_sygnal(parametry *param, dane_tablicy *dtab)
 {
@@ -46,6 +56,8 @@ void generuj_sygnal(parametry *param, dane_tablicy *dtab)
 
     for (i=0; i<dl_sygnalu; i++)
         push(dtab, param->amplituda * sin((M_PI * param->fs / param->fp) * i + param->fi));
+
+    dtab->czy_wygenerowany=1;
 }
 
 int menu_glowne(void)
@@ -136,7 +148,8 @@ void wyswietlanie(parametry *param,dane_tablicy *dtab)
     {
         printf("%d\t",i+1);
         if (dtab->tab[i]>=0)
-            printf(" %f\n",dtab->tab[i]); else
+            printf(" %f\n",dtab->tab[i]);
+        else
             printf("%lf\n",dtab->tab[i]);
     }
 }

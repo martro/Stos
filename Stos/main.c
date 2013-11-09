@@ -11,6 +11,7 @@ int main(void)
 
     dtab->pozycja=0;
     dtab->rozmiar=0;
+    dtab->czy_wygenerowany=0;
     /*
     dtab->czas=2;
     param->amplituda=5;
@@ -18,13 +19,14 @@ int main(void)
     param->fp=100;
     param->fs=1;*/
 
-
+    czy_wygenerowany_syg(dtab);
     menu_glowne();
 
     ustaw_parametry_sygnalu(param,dtab);
 
     generuj_sygnal(param,dtab);
     wyswietlanie(param,dtab);
+    czy_wygenerowany_syg(dtab);
 return 0;
 }
 
