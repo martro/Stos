@@ -34,6 +34,7 @@ typedef struct
 } dane_tablicy;
 
 void funkcja_menu_01();
+void funkcja_menu_02();
 void funkcja_menu_03();
 void funkcja_menu_04();
 void funkcja_menu_05();
@@ -46,6 +47,7 @@ void push(dane_tablicy *dtab, double wartosc);
 void rysuj_wykres(parametry *param, dane_tablicy *dtab);
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void usun_tab(dane_tablicy *dtab);
+void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
 void zapisz_bufor(parametry *param, dane_tablicy *dtab);
 void zatwierdz(void);
@@ -53,6 +55,11 @@ void zatwierdz(void);
 void funkcja_menu_01(parametry *param,dane_tablicy *dtab)
 {
     wyswietlanie(param,dtab);
+}
+
+void funkcja_menu_02(parametry *param,dane_tablicy *dtab)
+{
+    wczytaj_z_pliku(param,dtab);
 }
 
 void funkcja_menu_03(parametry *param,dane_tablicy *dtab)
@@ -181,6 +188,11 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         funkcja_menu_01(param,dtab);
         break;
     }
+    case 2:
+    {
+        funkcja_menu_02(param,dtab);
+        break;
+    }
     case 3:
     {
         zapisz_bufor(param,dtab);
@@ -240,9 +252,9 @@ void push(dane_tablicy *dtab, double wartosc)
 
 void rysuj_wykres(parametry *param, dane_tablicy *dtab)
 {
-    int dl_sygnalu;
+    int i,dl_sygnalu;
     char nazwa[NAZWA_PLIKU];
-    FILE * pFile;
+    FILE *pFile;
 
     dl_sygnalu = dtab->czas * param->fp;
 
@@ -263,21 +275,30 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
                     "      google.setOnLoadCallback(drawChart);"
                     "      function drawChart() {"
                     "        var data = google.visualization.arrayToDataTable(["
-                    "          ['Age', 'Weight'],"
-                    "          [ 0,0],"
-                    "          [ 3,10],"
-                    "          [ 8,12],"
-                    "          [ 4,5.5],"
-                    "          [ 11,14],"
-                    "          [ 4,5],"
-                    "          [ 3,3.5],"
-                    "          [ 6.5,7]"
-                    "        ]);"
+                    "          ['Age', 'Weight'],");
+
+
+            for (i=0; i<dl_sygnalu; i++)
+            {
+                fprintf(pFile,"[%d,",i+1);
+                fprintf(pFile," %f],\n",dtab->tab[i]);
+            }
+
+            /*
+            "          [ 3,10],"
+            "          [ 8,12],"
+            "          [ 4,5.5],"
+            "          [ 11,14],"
+            "          [ 4,5],"
+            "          [ 3,3.5],"
+            "          [ 6.5,7]"*/
+            fprintf(pFile,"        ]);"
                     "        var options = {"
-                    "          title: 'Age vs. Weight comparison',"
-                    "          hAxis: {title: 'Age', minValue: 0, maxValue: 10},"
-                    "          vAxis: {title: 'Masa', minValue: 0, maxValue: 200},"
-                    "          legend: 'none'"
+                    "          title: 'Wykres napiecia od czasu',");
+            fprintf(pFile,"          hAxis: {title: 'Nr probki', minValue: 0, maxValue: %lf},",dtab->czas*param->fp);
+            fprintf(pFile,"          vAxis: {title: 'Napiecie', minValue: %lf, maxValue: %lf},",-param->amplituda,param->amplituda);
+            fprintf(pFile,"          legend: 'none',"
+                    "       pointSize: 2"
                     "        };"
                     "        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));"
                     "        chart.draw(data, options);"
@@ -337,6 +358,27 @@ void usun_tab(dane_tablicy *dtab)
         printf("\nW BUFORZE NIE MA SYGNALU");
 }
 
+void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
+{
+    char nazwa[NAZWA_PLIKU];
+
+    FILE * pFile;
+        if ((dtab->czy_wygenerowany)==0)
+    {
+        printf("\nPODAJ NAZWE PLIKU: ");
+        scanf("%s",nazwa);
+        printf("%s",nazwa);
+        pFile = fopen (nazwa,"r");
+
+        if (pFile!=NULL)
+        {
+            printf("\nOTWORZONO PLIK\n");
+            fclose (pFile);
+        }
+    }
+
+}
+
 void wyswietlanie(parametry *param,dane_tablicy *dtab)
 {
     int i,dl_sygnalu;
@@ -377,11 +419,11 @@ void zapisz_bufor(parametry *param, dane_tablicy *dtab)
             fprintf(pFile,"*WYGENEROWANY SYGNAL\n"
                     "*PARAMETRY\n");
 
-            fprintf(pFile,"amplituda:\t%lf\n",param->amplituda);
-            fprintf(pFile,"czestotliwosc sygnalu:\t%lf\n",param->fs);
-            fprintf(pFile,"przesuniecie fazowe:\t%lf\n",param->fi);
-            fprintf(pFile,"czestotliwosc probkowania:\t%lf\n",param->fp);
-            fprintf(pFile,"czas sygnalu:\t%lf\n",dtab->czas);
+            fprintf(pFile,"@amplituda:\t%lf\n",param->amplituda);
+            fprintf(pFile,"@czestotliwosc sygnalu:\t%lf\n",param->fs);
+            fprintf(pFile,"@przesuniecie fazowe:\t%lf\n",param->fi);
+            fprintf(pFile,"@czestotliwosc probkowania:\t%lf\n",param->fp);
+            fprintf(pFile,"@czas sygnalu:\t%lf\n",dtab->czas);
 
             for (i=0; i<dl_sygnalu; i++)
             {
