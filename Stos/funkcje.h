@@ -12,6 +12,7 @@
 #include <math.h>
 
 #define ROZMIAR_POCZ 100
+#define NAZWA_PLIKU 30
 
 typedef struct  //parametry sygnalu
 {
@@ -33,6 +34,7 @@ typedef struct
 } dane_tablicy;
 
 void funkcja_menu_01();
+void funkcja_menu_03();
 void funkcja_menu_04();
 void funkcja_menu_05();
 void funkcja_menu_06();
@@ -43,11 +45,17 @@ void push(dane_tablicy *dtab, double wartosc);
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void usun_tab(dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
+void zapisz_bufor(parametry *param, dane_tablicy *dtab);
 void zatwierdz(void);
 
 void funkcja_menu_01(parametry *param,dane_tablicy *dtab)
 {
     wyswietlanie(param,dtab);
+}
+
+void funkcja_menu_03(parametry *param,dane_tablicy *dtab)
+{
+    zapisz_bufor(param,dtab);
 }
 
 void funkcja_menu_04(parametry *param,dane_tablicy *dtab)
@@ -167,6 +175,11 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         funkcja_menu_01(param,dtab);
         break;
     }
+    case 3:
+    {
+        zapisz_bufor(param,dtab);
+        break;
+    }
     case 4:
     {
         funkcja_menu_04(param,dtab);
@@ -244,13 +257,14 @@ void usun_tab(dane_tablicy *dtab)
 {
     if (dtab->czy_wygenerowany)
     {
-    free(dtab->tab);
-    dtab->czy_wygenerowany=0;
-    dtab->pozycja=0;
-    dtab->rozmiar=0;
-    printf("\nWYGENEROWANY SYGNAL ZOSTAL USUNIETY\n");
-    } else
-    printf("\nW BUFORZE NIE MA SYGNALU");
+        free(dtab->tab);
+        dtab->czy_wygenerowany=0;
+        dtab->pozycja=0;
+        dtab->rozmiar=0;
+        printf("\nWYGENEROWANY SYGNAL ZOSTAL USUNIETY\n");
+    }
+    else
+        printf("\nW BUFORZE NIE MA SYGNALU");
 }
 
 void wyswietlanie(parametry *param,dane_tablicy *dtab)
@@ -271,6 +285,41 @@ void wyswietlanie(parametry *param,dane_tablicy *dtab)
     }
     else
         printf("\nsygnal nie wygenerowany\n");
+}
+
+void zapisz_bufor(parametry *param, dane_tablicy *dtab)
+{
+    int i,dl_sygnalu;
+    char nazwa[NAZWA_PLIKU];
+    FILE * pFile;
+
+    dl_sygnalu = dtab->czas * param->fp;
+
+    if (dtab->czy_wygenerowany)
+    {
+        printf("\nPODAJ NAZWE PLIKU: ");
+        scanf("%s",nazwa);
+        printf("%s",nazwa);
+        pFile = fopen (nazwa,"w");
+
+        if (pFile!=NULL)
+        {
+            for (i=0; i<dl_sygnalu; i++)
+            {
+                fprintf(pFile,"%d\t",i+1);
+                if (dtab->tab[i]>=0)
+                    fprintf(pFile," %f\n",dtab->tab[i]);
+                else
+                    fprintf(pFile,"%lf\n",dtab->tab[i]);
+            }
+            fclose (pFile);
+        }
+
+
+    }
+    else
+        printf("\nsygnal nie wygenerowany\n");
+
 }
 
 void zatwierdz(void)
