@@ -13,15 +13,22 @@ int main(void)
     dtab->pozycja=0;
     dtab->rozmiar=0;
     dtab->czy_wygenerowany=0;
+    dtab->czy_parametry=0;
 
+    printf("Laboratorium Programowanie w C\n"
+           "Program generujacy sygnaly\n"
+           "Marcin Trojan 205608 MTR W-10\n");
 
 
     do
     {
+        zatwierdz();
         dzialaj=menu_glowne(param,dtab);
     }
     while (dzialaj);
 
+free(dtab);
+free(param);
     return 0;
 }
 
