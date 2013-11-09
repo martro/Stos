@@ -38,10 +38,12 @@ void funkcja_menu_03();
 void funkcja_menu_04();
 void funkcja_menu_05();
 void funkcja_menu_06();
+void funkcja_menu_10();
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(parametry *param,dane_tablicy *dtab);
 void podkreslenie(void);
 void push(dane_tablicy *dtab, double wartosc);
+void rysuj_wykres(parametry *param, dane_tablicy *dtab);
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void usun_tab(dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
@@ -104,6 +106,11 @@ void funkcja_menu_06(dane_tablicy *dtab)
     usun_tab(dtab);
 }
 
+void funkcja_menu_10(parametry *param,dane_tablicy *dtab)
+{
+    rysuj_wykres(param,dtab);
+}
+
 void generuj_sygnal(parametry *param, dane_tablicy *dtab)
 {
     int i, dl_sygnalu;
@@ -127,23 +134,22 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         fflush(stdin);
         podkreslenie();
         printf("WYBOR AKCJI PROGRAMU\n"
-               "1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
-               "2 - ZALADUJ ZAPISANY SYGNAL DO BUFORA\n"
-               "3 - ZAPISZ SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
+               " 1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
+               " 2 - ZALADUJ ZAPISANY SYGNAL DO BUFORA\n"
+               " 3 - ZAPISZ SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
                "\n"
-               "4 - GENERUJ SYGNAL\n"
-               "5 - USTAW PARAMETRY SYGNALU\n"
-               "6 - USUN POPRZEDNIO WYGENEROWANY SYGNAL\n"
+               " 4 - GENERUJ SYGNAL\n"
+               " 5 - USTAW PARAMETRY SYGNALU\n"
+               " 6 - USUN SYGNAL Z BUFORA\n"
                "\n"
-               "7 - ZASZUM SYGNAL\n"    //jeszcze nie dziala
-               "8 - USTAW PARAMETRY SZUMU\n\n"  //jeszcze nie dziala
-               "9 - ODSZUM SYGNAL\n"
-
-
+               " 7 - ZASZUM SYGNAL\n"    //jeszcze nie dziala
+               " 8 - USTAW PARAMETRY SZUMU\n\n"  //jeszcze nie dziala
+               " 9 - ODSZUM SYGNAL\n\n"
+               "10 - GENERUJ WYKRES  [Google Charts]\n"
                "WYBOR: ");
         if(scanf("%d",&wybor))   //jezeli odczytane jest liczba
         {
-            if ((wybor>=0)&&(wybor<10))
+            if ((wybor>=0)&&(wybor<=10))
             {
                 printf("Poprawnie odczytano. Twoj wybor to: %d\n",wybor);
                 blad_odczytu=0;
@@ -195,6 +201,11 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         funkcja_menu_06(dtab);
         break;
     }
+    case 10:
+    {
+        funkcja_menu_10(param,dtab);
+        break;
+    }
     default:
     {
         break;
@@ -224,6 +235,65 @@ void push(dane_tablicy *dtab, double wartosc)
         dtab->rozmiar=dtab->rozmiar*2;
     }
     dtab->tab[dtab->pozycja ++]=wartosc;
+
+}
+
+void rysuj_wykres(parametry *param, dane_tablicy *dtab)
+{
+    int dl_sygnalu;
+    char nazwa[NAZWA_PLIKU];
+    FILE * pFile;
+
+    dl_sygnalu = dtab->czas * param->fp;
+
+    if (dtab->czy_wygenerowany)
+    {
+        printf("\nPODAJ NAZWE PLIKU: ");
+        scanf("%s",nazwa);
+        printf("%s",nazwa);
+        pFile = fopen (nazwa,"w");
+
+        if (pFile!=NULL)
+        {
+            fprintf(pFile,"<html>"
+                    "  <head>"
+                    "    <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>"
+                    "    <script type=\"text/javascript\">"
+                    "      google.load(\"visualization\", \"1\", {packages:[\"corechart\"]});"
+                    "      google.setOnLoadCallback(drawChart);"
+                    "      function drawChart() {"
+                    "        var data = google.visualization.arrayToDataTable(["
+                    "          ['Age', 'Weight'],"
+                    "          [ 0,0],"
+                    "          [ 3,10],"
+                    "          [ 8,12],"
+                    "          [ 4,5.5],"
+                    "          [ 11,14],"
+                    "          [ 4,5],"
+                    "          [ 3,3.5],"
+                    "          [ 6.5,7]"
+                    "        ]);"
+                    "        var options = {"
+                    "          title: 'Age vs. Weight comparison',"
+                    "          hAxis: {title: 'Age', minValue: 0, maxValue: 10},"
+                    "          vAxis: {title: 'Masa', minValue: 0, maxValue: 200},"
+                    "          legend: 'none'"
+                    "        };"
+                    "        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));"
+                    "        chart.draw(data, options);"
+                    "      }"
+                    "    </script>"
+                    "  </head>"
+                    "  <body>"
+                    "    <div id=\"chart_div\" style=\"width: 900px; height: 500px;\"></div>"
+                    "  </body>"
+                    "</html>");
+
+            fclose (pFile);
+        }
+    }
+    else
+        printf("\nsygnal nie wygenerowany\n");
 
 }
 
@@ -304,6 +374,15 @@ void zapisz_bufor(parametry *param, dane_tablicy *dtab)
 
         if (pFile!=NULL)
         {
+            fprintf(pFile,"*WYGENEROWANY SYGNAL\n"
+                    "*PARAMETRY\n");
+
+            fprintf(pFile,"amplituda:\t%lf\n",param->amplituda);
+            fprintf(pFile,"czestotliwosc sygnalu:\t%lf\n",param->fs);
+            fprintf(pFile,"przesuniecie fazowe:\t%lf\n",param->fi);
+            fprintf(pFile,"czestotliwosc probkowania:\t%lf\n",param->fp);
+            fprintf(pFile,"czas sygnalu:\t%lf\n",dtab->czas);
+
             for (i=0; i<dl_sygnalu; i++)
             {
                 fprintf(pFile,"%d\t",i+1);

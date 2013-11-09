@@ -27,6 +27,7 @@ int main(void)
     }
     while (dzialaj);
 
+
 free(dtab);
 free(param);
     return 0;
