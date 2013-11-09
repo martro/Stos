@@ -1,8 +1,9 @@
 # depslib dependency file v1.0
-1383985879 source:c:\users\martro\documents\github\stos\stos\main.c
-	<stdio.h>
-	<stdlib.h>
+1383987513 source:c:\users\martro\documents\github\stos\stos\main.c
 	"funkcje.h"
 
-1383985956 c:\users\martro\documents\github\stos\stos\funkcje.h
+1383987808 c:\users\martro\documents\github\stos\stos\funkcje.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
 

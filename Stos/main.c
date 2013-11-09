@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "funkcje.h"
 
 
@@ -13,8 +11,14 @@ int main(void)
 
     dtab->pozycja=0;
     dtab->rozmiar=0;
+    dtab->czas=10;
+    param->amplituda=5;
+    param->fi=0;
+    param->fp=10;
+    param->fs=1;
 
     menu_glowne();
 
+    generuj_sygnal(param,dtab);
 return 0;
 }

@@ -7,6 +7,10 @@
 #ifndef FUNKCJE_H_INCLUDED
 #define FUNKCJE_H_INCLUDED
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 #define ROZMIAR_POCZ 100
 
 typedef struct  //parametry sygnalu
@@ -27,10 +31,24 @@ typedef struct
 } dane_tablicy;
 
 
+void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(void);
 void podkreslenie(void);
-void push(dane_tablicy *dtab, int wartosc);
+void push(dane_tablicy *dtab, double wartosc);
+void wyswietlanie(dane_tablicy *dtab);
 
+void generuj_sygnal(parametry *param, dane_tablicy *dtab)
+{
+    int i, dl_sygnalu;
+
+    dl_sygnalu = dtab->czas * param->fp;
+
+    for (i=0;i<dl_sygnalu;i++)
+        push(dtab, param->amplituda * sin((M_PI * param->fs / param->fp) * i + param->fi));
+
+    for (i=0;i<dl_sygnalu;i++)
+        printf("%d\t%f\n",i,dtab->tab[i]);
+}
 
 int menu_glowne(void)
 {
@@ -79,7 +97,7 @@ void podkreslenie(void)
     printf("\n-------------------\n");
 }
 
-void push(dane_tablicy *dtab, int wartosc)
+void push(dane_tablicy *dtab, double wartosc)
 {
     if (dtab->rozmiar==0)
     {
@@ -94,4 +112,6 @@ void push(dane_tablicy *dtab, int wartosc)
     dtab->tab[dtab->pozycja ++]=wartosc;
 
 }
+
+void wyswietlanie(dane_tablicy *dtab);
 #endif // FUNKCJE_H_INCLUDED
