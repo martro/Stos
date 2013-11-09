@@ -32,11 +32,10 @@ typedef struct
     int czy_parametry;
 } dane_tablicy;
 
-
 void funkcja_menu_01();
-void funkcja_menu_02();
-void funkcja_menu_03();
 void funkcja_menu_04();
+void funkcja_menu_05();
+void funkcja_menu_06();
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(parametry *param,dane_tablicy *dtab);
 void podkreslenie(void);
@@ -46,9 +45,12 @@ void usun_tab(dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
 void zatwierdz(void);
 
-
-
 void funkcja_menu_01(parametry *param,dane_tablicy *dtab)
+{
+    wyswietlanie(param,dtab);
+}
+
+void funkcja_menu_04(parametry *param,dane_tablicy *dtab)
 {
     int blad=0;
 
@@ -84,12 +86,12 @@ void funkcja_menu_01(parametry *param,dane_tablicy *dtab)
 
 }
 
-void funkcja_menu_02(parametry *param,dane_tablicy *dtab)
+void funkcja_menu_05(parametry *param,dane_tablicy *dtab)
 {
     ustaw_parametry_sygnalu(param,dtab);
 }
 
-void funkcja_menu_03(dane_tablicy *dtab)
+void funkcja_menu_06(dane_tablicy *dtab)
 {
     usun_tab(dtab);
 }
@@ -117,11 +119,17 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         fflush(stdin);
         podkreslenie();
         printf("WYBOR AKCJI PROGRAMU\n"
-               "1 - GENERUJ SYGNAL\n"
-               "2 - USTAW PARAMETRY SYGNALU\n"
-               "3 - USUN POPRZEDNIO WYGENEROWANY SYGNAL\n"
-               "4 - ZASZUM SYGNAL\n"    //jeszcze nie dziala
-               "5 - USTAW PARAMETRY SZUMU\n\n"  //jeszcze nie dziala
+               "1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
+               "2 - ZALADUJ ZAPISANY SYGNAL DO BUFORA\n"
+               "3 - ZAPISZ SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
+               "\n"
+               "4 - GENERUJ SYGNAL\n"
+               "5 - USTAW PARAMETRY SYGNALU\n"
+               "6 - USUN POPRZEDNIO WYGENEROWANY SYGNAL\n"
+               "\n"
+               "7 - ZASZUM SYGNAL\n"    //jeszcze nie dziala
+               "8 - USTAW PARAMETRY SZUMU\n\n"  //jeszcze nie dziala
+               "9 - ODSZUM SYGNAL\n"
 
 
                "WYBOR: ");
@@ -159,14 +167,19 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         funkcja_menu_01(param,dtab);
         break;
     }
-    case 2:
+    case 4:
     {
-        funkcja_menu_02(param,dtab);
+        funkcja_menu_04(param,dtab);
         break;
     }
-    case 3:
+    case 5:
     {
-        funkcja_menu_03(dtab);
+        funkcja_menu_05(param,dtab);
+        break;
+    }
+    case 6:
+    {
+        funkcja_menu_06(dtab);
         break;
     }
     default:
@@ -229,11 +242,15 @@ void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
 
 void usun_tab(dane_tablicy *dtab)
 {
+    if (dtab->czy_wygenerowany)
+    {
     free(dtab->tab);
     dtab->czy_wygenerowany=0;
     dtab->pozycja=0;
     dtab->rozmiar=0;
-    printf("/nWYGENEROWANY SYGNAL ZOSTAL USUNIETY/n");
+    printf("\nWYGENEROWANY SYGNAL ZOSTAL USUNIETY\n");
+    } else
+    printf("\nW BUFORZE NIE MA SYGNALU");
 }
 
 void wyswietlanie(parametry *param,dane_tablicy *dtab)
@@ -258,7 +275,7 @@ void wyswietlanie(parametry *param,dane_tablicy *dtab)
 
 void zatwierdz(void)
 {
-    printf("\nNacisnij dowolny przycik.\n");
+    printf("\nNacisnij enter.\n");
     fflush(stdin);
     getchar();
 }
