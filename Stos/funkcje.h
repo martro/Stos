@@ -33,6 +33,7 @@ typedef struct
 
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(void);
+void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void podkreslenie(void);
 void push(dane_tablicy *dtab, double wartosc);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
@@ -87,6 +88,22 @@ int menu_glowne(void)
 
 
     return wybor;
+}
+
+void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
+{
+    printf("PODAJ PARAMETRY SYGNALU\n");
+    printf("amplituda: ");
+    scanf("%lf",&param->amplituda);
+    printf("czestotliwosc sygnalu");
+    scanf("%lf",&param->fs);
+    printf("przesuniecie fazowe: ");
+    scanf("%lf",&param->fi);
+    printf("czestotliwosc probkowania: ");
+    scanf("%lf",&param->fp);
+    printf("czas sygnalu: ");
+    scanf("%lf",&dtab->czas);
+
 }
 
 void podkreslenie(void)
