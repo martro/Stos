@@ -35,7 +35,7 @@ void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(void);
 void podkreslenie(void);
 void push(dane_tablicy *dtab, double wartosc);
-void wyswietlanie(dane_tablicy *dtab);
+void wyswietlanie(parametry *param,dane_tablicy *dtab);
 
 void generuj_sygnal(parametry *param, dane_tablicy *dtab)
 {
@@ -43,11 +43,8 @@ void generuj_sygnal(parametry *param, dane_tablicy *dtab)
 
     dl_sygnalu = dtab->czas * param->fp;
 
-    for (i=0;i<dl_sygnalu;i++)
+    for (i=0; i<dl_sygnalu; i++)
         push(dtab, param->amplituda * sin((M_PI * param->fs / param->fp) * i + param->fi));
-
-    for (i=0;i<dl_sygnalu;i++)
-        printf("%d\t%f\n",i,dtab->tab[i]);
 }
 
 int menu_glowne(void)
@@ -113,5 +110,17 @@ void push(dane_tablicy *dtab, double wartosc)
 
 }
 
-void wyswietlanie(dane_tablicy *dtab);
+void wyswietlanie(parametry *param,dane_tablicy *dtab)
+{
+    int i,dl_sygnalu;
+    dl_sygnalu = dtab->czas * param->fp;
+
+    for (i=0; i<dl_sygnalu; i++)
+    {
+        printf("%d\t",i+1);
+        if (dtab->tab[i]>=0)
+            printf(" %f\n",dtab->tab[i]); else
+            printf("%lf\n",dtab->tab[i]);
+    }
+}
 #endif // FUNKCJE_H_INCLUDED

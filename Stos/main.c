@@ -20,5 +20,10 @@ int main(void)
     menu_glowne();
 
     generuj_sygnal(param,dtab);
+    wyswietlanie(param,dtab);
 return 0;
 }
+
+
+
+
