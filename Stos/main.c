@@ -4,6 +4,7 @@
 int main(void)
 
 {
+    int dzialaj;
     parametry *param;
     dane_tablicy *dtab;
     param = (parametry *)malloc(sizeof(parametry));
@@ -19,14 +20,12 @@ int main(void)
     param->fp=100;
     param->fs=1;*/
 
-    czy_wygenerowany_syg(dtab);
-    menu_glowne();
 
-    ustaw_parametry_sygnalu(param,dtab);
+    do
+    {
+        dzialaj=menu_glowne();
+    } while (dzialaj);
 
-    generuj_sygnal(param,dtab);
-    wyswietlanie(param,dtab);
-    czy_wygenerowany_syg(dtab);
 return 0;
 }
 

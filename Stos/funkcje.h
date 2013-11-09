@@ -32,11 +32,13 @@ typedef struct
 } dane_tablicy;
 
 int czy_wygenerowany_syg(dane_tablicy *dtab);
+void funkcja_menu_01();
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 int menu_glowne(void);
-void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void podkreslenie(void);
 void push(dane_tablicy *dtab, double wartosc);
+void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
+void usun_tab(dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
 
 int czy_wygenerowany_syg(dane_tablicy *dtab)
@@ -60,6 +62,11 @@ void generuj_sygnal(parametry *param, dane_tablicy *dtab)
     dtab->czy_wygenerowany=1;
 }
 
+void funkcja_menu_01()
+{
+    printf("\npierwsza funckja\n");
+}
+
 int menu_glowne(void)
 {
     int wybor;
@@ -74,9 +81,9 @@ int menu_glowne(void)
                "1 - GENERUJ SYGNAL\n"
                "2 - ZASZUM SYGNAL\n\n"
                "WYBOR: ");
-        if(scanf("%d",&wybor))   //jezeli odczytane jest liczb¹
+        if(scanf("%d",&wybor))   //jezeli odczytane jest liczba
         {
-            if ((wybor>0)&&(wybor<10))
+            if ((wybor>=0)&&(wybor<10))
             {
                 printf("Poprawnie odczytano. Twoj wybor to: %d\n",wybor);
                 blad_odczytu=0;
@@ -97,25 +104,28 @@ int menu_glowne(void)
     }
     while (blad_odczytu==1);
 
+    printf("\n\n\nwybor: %d\n\n",wybor);
+
+    switch (wybor)
+    {
+    case 0:
+        {
+            break;
+        }
+    case 1:
+        {
+            funkcja_menu_01();
+            break;
+        }
+    default:
+        {
+            break;
+        }
+    }
+
 
 
     return wybor;
-}
-
-void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
-{
-    printf("PODAJ PARAMETRY SYGNALU\n");
-    printf("amplituda: ");
-    scanf("%lf",&param->amplituda);
-    printf("czestotliwosc sygnalu");
-    scanf("%lf",&param->fs);
-    printf("przesuniecie fazowe: ");
-    scanf("%lf",&param->fi);
-    printf("czestotliwosc probkowania: ");
-    scanf("%lf",&param->fp);
-    printf("czas sygnalu: ");
-    scanf("%lf",&dtab->czas);
-
 }
 
 void podkreslenie(void)
@@ -139,11 +149,37 @@ void push(dane_tablicy *dtab, double wartosc)
 
 }
 
+void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
+{
+    printf("PODAJ PARAMETRY SYGNALU\n");
+    printf("amplituda: ");
+    scanf("%lf",&param->amplituda);
+    printf("czestotliwosc sygnalu");
+    scanf("%lf",&param->fs);
+    printf("przesuniecie fazowe: ");
+    scanf("%lf",&param->fi);
+    printf("czestotliwosc probkowania: ");
+    scanf("%lf",&param->fp);
+    printf("czas sygnalu: ");
+    scanf("%lf",&dtab->czas);
+
+}
+
+void usun_tab(dane_tablicy *dtab)
+{
+    free(dtab->tab);
+    dtab->czy_wygenerowany=0;
+    dtab->pozycja=0;
+    dtab->rozmiar=0;
+}
+
 void wyswietlanie(parametry *param,dane_tablicy *dtab)
 {
     int i,dl_sygnalu;
     dl_sygnalu = dtab->czas * param->fp;
 
+    if (czy_wygenerowany_syg(dtab))
+    {
     for (i=0; i<dl_sygnalu; i++)
     {
         printf("%d\t",i+1);
@@ -152,5 +188,7 @@ void wyswietlanie(parametry *param,dane_tablicy *dtab)
         else
             printf("%lf\n",dtab->tab[i]);
     }
+    }else
+    printf("\nsygnal nie wygenerowany\n");
 }
 #endif // FUNKCJE_H_INCLUDED
