@@ -13,6 +13,7 @@
 
 #define ROZMIAR_POCZ 100
 #define NAZWA_PLIKU 30
+#define DLUGOSC_BUFORA_ODCZYT 100
 
 typedef struct  //parametry sygnalu
 {
@@ -361,6 +362,7 @@ void usun_tab(dane_tablicy *dtab)
 void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
 {
     char nazwa[NAZWA_PLIKU];
+    char bufor[DLUGOSC_BUFORA_ODCZYT];
 
     FILE * pFile;
         if ((dtab->czy_wygenerowany)==0)
@@ -373,6 +375,15 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
         if (pFile!=NULL)
         {
             printf("\nOTWORZONO PLIK\n");
+
+            if (fgetc(pFile)=='*')
+                while (fgetc(pFile)!='\n');
+
+            printf("\nznak: %c \n",fgetc(pFile));
+            fseek(pFile,-1,SEEK_CUR);
+            printf("\nznak: %c \n",fgetc(pFile));
+            printf("\nznak: %c \n",fgetc(pFile));
+
             fclose (pFile);
         }
     }
