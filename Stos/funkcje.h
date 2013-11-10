@@ -41,11 +41,13 @@ void funkcja_menu_03();
 void funkcja_menu_04();
 void funkcja_menu_05();
 void funkcja_menu_06();
-void funkcja_menu_06();
-void funkcja_menu_10();
+void funkcja_menu_07();
+void funkcja_menu_08();
+void funkcja_menu_09();
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
 void inicjalizuj_zegar(void);
 int menu_glowne(parametry *param,dane_tablicy *dtab);
+void odszum(parametry *param, dane_tablicy *dtab);
 void podkreslenie(void);
 double push(dane_tablicy *dtab, double wartosc);
 void pushat(dane_tablicy *dtab, double wartosc, int pozycja);
@@ -129,7 +131,12 @@ void funkcja_menu_07(parametry *param,dane_tablicy *dtab)
     zaszum(param,dtab);
 }
 
-void funkcja_menu_10(parametry *param,dane_tablicy *dtab)
+void funkcja_menu_08(parametry *param,dane_tablicy *dtab)
+{
+    odszum(param,dtab);
+}
+
+void funkcja_menu_09(parametry *param,dane_tablicy *dtab)
 {
     rysuj_wykres(param,dtab);
 }
@@ -162,18 +169,17 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         fflush(stdin);
         podkreslenie();
         printf("WYBOR AKCJI PROGRAMU\n"
-               " 1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
-               " 2 - ZALADUJ ZAPISANY SYGNAL DO BUFORA\n"
-               " 3 - ZAPISZ SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
+               "1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
+               "2 - ZALADUJ ZAPISANY SYGNAL DO BUFORA\n"
+               "3 - ZAPISZ SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
                "\n"
-               " 4 - GENERUJ SYGNAL\n"
-               " 5 - USTAW PARAMETRY SYGNALU\n"
-               " 6 - USUN SYGNAL Z BUFORA\n"
+               "4 - GENERUJ SYGNAL\n"
+               "5 - USTAW PARAMETRY SYGNALU\n"
+               "6 - USUN SYGNAL Z BUFORA\n"
                "\n"
-               " 7 - ZASZUM SYGNAL\n"    //jeszcze nie dziala
-               " 8 - USTAW PARAMETRY SZUMU\n\n"  //jeszcze nie dziala
-               " 9 - ODSZUM SYGNAL\n\n"
-               "10 - GENERUJ WYKRES  [Google Charts]\n"
+               "7 - ZASZUM SYGNAL\n"
+               "8 - ODSZUM SYGNAL\n\n"
+               "9 - GENERUJ WYKRES  [Google Charts]\n"
                "WYBOR: ");
         if(scanf("%d",&wybor))   //jezeli odczytane jest liczba
         {
@@ -239,9 +245,14 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         funkcja_menu_07(param,dtab);
         break;
     }
-    case 10:
+    case 8:
     {
-        funkcja_menu_10(param,dtab);
+        funkcja_menu_08(param,dtab);
+        break;
+    }
+    case 9:
+    {
+        funkcja_menu_09(param,dtab);
         break;
     }
     default:
@@ -253,6 +264,28 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
 
 
     return wybor;
+}
+
+void odszum(parametry *param, dane_tablicy *dtab)
+{
+    int i,j,suma,n;
+
+    n=param->fp*dtab->czas;
+
+    pushat(dtab,(at(dtab,0)+at(dtab,1))/2.,0);
+    pushat(dtab,(at(dtab,0)+at(dtab,1)+at(dtab,2)/3.),1);
+
+    for (i=2;i<=(n-3);i++)
+    {
+        suma=0;
+        for(j=(i-2);j<=(i+2);j++)
+            {
+                suma+=at(dtab,j);
+            }
+        pushat(dtab,suma/5.,i);
+    }
+    pushat(dtab,(at(dtab,n-3)+at(dtab,n-2)+at(dtab,n-1)/3.),n-2);
+    pushat(dtab,(at(dtab,n-2)+at(dtab,n-1))/2.,n-1);
 }
 
 void podkreslenie(void)
@@ -330,7 +363,7 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
             fprintf(pFile,"          hAxis: {title: 'Nr probki', minValue: 0, maxValue: %lf},",dtab->czas*param->fp);
             fprintf(pFile,"          vAxis: {title: 'Napiecie', minValue: %lf, maxValue: %lf},",-param->amplituda,param->amplituda);
             fprintf(pFile,"          legend: 'none',"
-                    "       pointSize: 2"
+                    "       pointSize: 1"
                     "        };"
                     "        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));"
                     "        chart.draw(data, options);"
