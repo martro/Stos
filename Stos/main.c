@@ -4,6 +4,7 @@
 int main(void)
 
 {
+    inicjalizuj_zegar();
     int dzialaj;
     parametry *param;
     dane_tablicy *dtab;

@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #define ROZMIAR_POCZ 100
 #define NAZWA_PLIKU 30
@@ -33,24 +34,34 @@ typedef struct
     int czy_parametry;
 } dane_tablicy;
 
+double at(dane_tablicy *dtab,int pozycja);
 void funkcja_menu_01();
 void funkcja_menu_02();
 void funkcja_menu_03();
 void funkcja_menu_04();
 void funkcja_menu_05();
 void funkcja_menu_06();
+void funkcja_menu_06();
 void funkcja_menu_10();
 void generuj_sygnal(parametry *param,dane_tablicy *dtab);
+void inicjalizuj_zegar(void);
 int menu_glowne(parametry *param,dane_tablicy *dtab);
 void podkreslenie(void);
-void push(dane_tablicy *dtab, double wartosc);
+double push(dane_tablicy *dtab, double wartosc);
+void pushat(dane_tablicy *dtab, double wartosc, int pozycja);
 void rysuj_wykres(parametry *param, dane_tablicy *dtab);
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab);
 void usun_tab(dane_tablicy *dtab);
 void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab);
 void wyswietlanie(parametry *param,dane_tablicy *dtab);
 void zapisz_bufor(parametry *param, dane_tablicy *dtab);
+void zaszum(parametry *param, dane_tablicy *dtab);
 void zatwierdz(void);
+
+double at(dane_tablicy *dtab,int pozycja)
+{
+    return dtab->tab[pozycja];
+}
 
 void funkcja_menu_01(parametry *param,dane_tablicy *dtab)
 {
@@ -113,6 +124,11 @@ void funkcja_menu_06(dane_tablicy *dtab)
     usun_tab(dtab);
 }
 
+void funkcja_menu_07(parametry *param,dane_tablicy *dtab)
+{
+    zaszum(param,dtab);
+}
+
 void funkcja_menu_10(parametry *param,dane_tablicy *dtab)
 {
     rysuj_wykres(param,dtab);
@@ -125,9 +141,14 @@ void generuj_sygnal(parametry *param, dane_tablicy *dtab)
     dl_sygnalu = dtab->czas * param->fp;
 
     for (i=0; i<dl_sygnalu; i++)
-        push(dtab, param->amplituda * sin((M_PI * param->fs / param->fp) * i + param->fi));
+        push(dtab, param->amplituda * sin((M_PI *2* param->fs / param->fp) * i + param->fi));
 
     dtab->czy_wygenerowany=1;
+}
+
+void inicjalizuj_zegar(void)
+{
+    srand (time(NULL));
 }
 
 int menu_glowne(parametry *param,dane_tablicy *dtab)
@@ -213,6 +234,11 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
         funkcja_menu_06(dtab);
         break;
     }
+    case 7:
+    {
+        funkcja_menu_07(param,dtab);
+        break;
+    }
     case 10:
     {
         funkcja_menu_10(param,dtab);
@@ -234,7 +260,7 @@ void podkreslenie(void)
     printf("\n-------------------\n");
 }
 
-void push(dane_tablicy *dtab, double wartosc)
+double push(dane_tablicy *dtab, double wartosc)
 {
     if (dtab->rozmiar==0)
     {
@@ -247,7 +273,13 @@ void push(dane_tablicy *dtab, double wartosc)
         dtab->rozmiar=dtab->rozmiar*2;
     }
     dtab->tab[dtab->pozycja ++]=wartosc;
+    return wartosc;
 
+}
+
+void pushat(dane_tablicy *dtab, double wartosc, int pozycja)
+{
+    dtab->tab[pozycja]=wartosc;
 }
 
 void rysuj_wykres(parametry *param, dane_tablicy *dtab)
@@ -275,7 +307,7 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
                     "      google.setOnLoadCallback(drawChart);"
                     "      function drawChart() {"
                     "        var data = google.visualization.arrayToDataTable(["
-                    "          ['Age', 'Weight'],");
+                    "          ['Napiece', 'Nr probki'],");
 
 
             for (i=0; i<dl_sygnalu; i++)
@@ -410,55 +442,7 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
                 }
 
 
-/*
-                if (znak=='@')
-                {
-                    printf("hurrrrrrrrrrrrrrrrra");
-                    licznik++;
-                    while (fgetc(pFile)!=':');
 
-                    switch(licznik)
-                    {
-                    case 1:
-                    {
-                        fscanf(pFile,"%lf",&param->amplituda);
-                        break;
-                    }
-                    case 2:
-                    {
-                        fscanf(pFile,"%lf",&param->fs);
-                        break;
-                    }
-                    case 3:
-                    {
-                        fscanf(pFile,"%lf",&param->fi);
-                        break;
-                    }
-                    case 4:
-                    {
-                        fscanf(pFile,"%lf",&param->fp);
-                        break;
-                    }
-                    case 5:
-                    {
-                        fscanf(pFile,"%lf",&dtab->czas);
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                    }
-                }
-                if (znak==':')
-                {
-                    printf("hurrrrrrrrrrrrrrrrra");
-                    fscanf(pFile,"%d\t:%lf",&nr_probki,&odczyt);
-                    printf("\n%d\t%lf.%d",nr_probki,odczyt,dtab->pozycja);
-                    push(dtab,odczyt);
-                    dtab->czy_wygenerowany=1;
-                    dtab->czy_parametry=1;
-                }*/
            }
             while (znak!=EOF);
 
@@ -469,7 +453,8 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
             printf("czas sygnalu:             \t%lf\n",dtab->czas);
             fclose (pFile);
             printf("dtab: %d, %d",dtab->pozycja,dtab->rozmiar);
-
+            dtab->czy_wygenerowany=1;
+            dtab->czy_parametry=1;
         }
     }
 
@@ -536,6 +521,37 @@ void zapisz_bufor(parametry *param, dane_tablicy *dtab)
     }
     else
         printf("\nsygnal nie wygenerowany\n");
+
+}
+
+void zaszum(parametry *param, dane_tablicy *dtab)
+{
+    int i,popr;
+    double amplituda_szumu,szum;
+
+        if (dtab->czy_wygenerowany)
+    {
+    printf("\nDODAWANIE SZUMU\n\n"
+           "Ustaw parametry\n");
+           do
+           {
+           popr=0;
+           fflush(stdin);
+           printf("Podaj amplitude szumu jako procent amplitudy sygnalu: ");
+           popr=scanf("%lf",&amplituda_szumu);
+
+           } while((amplituda_szumu<0) || (popr==0));
+
+
+          for (i=0;i<(param->fp*dtab->czas);i++)
+          {
+            szum=rand()%1000;
+            szum=param->amplituda*(szum/500-1)*amplituda_szumu/100;
+            pushat(dtab,at(dtab,i)+szum,i);
+            printf("%lf\n",at(dtab,i));
+          }
+    } else
+    printf("\nSygnal nie zostal jeszcze wygenerowany. Nie mozna zaszumic.\n");
 
 }
 
