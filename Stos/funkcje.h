@@ -360,9 +360,9 @@ void usun_tab(dane_tablicy *dtab)
 
 void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
 {
-    char nazwa[NAZWA_PLIKU];
-    int licznik=0,nr_probki;
-    double odczyt;
+    char nazwa[NAZWA_PLIKU],znak;
+    int licznik=0,nr_probki,inttym;
+    double odczyt, liczbatym;
     dtab->pozycja=0;
     FILE * pFile;
     if ((dtab->czy_wygenerowany)==0)
@@ -372,70 +372,96 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
         printf("%s",nazwa);
         pFile = fopen (nazwa,"r");
 
+
         if (pFile!=NULL)
         {
             printf("\nOTWORZONO PLIK\n");
-
-            while(fgetc(pFile)!=EOF)
+            do
             {
+                znak=fgetc(pFile);
+
                 fseek(pFile,-1,SEEK_CUR);
 
-                if (fgetc(pFile)=='*')
+                if (znak=='*')
                 {
                     while (fgetc(pFile)!='\n');
+                    printf("koment\n");
                 }
-                else
-                {
-                    fseek(pFile,-1,SEEK_CUR);
-                    if (fgetc(pFile)=='@')
-                    {
-                        fseek(pFile,-1,SEEK_CUR);
-                        while (fgetc(pFile)!=':');
-                        licznik++;
-                        switch(licznik)
-                        {
-                        case 1:
-                        {
-                            fscanf(pFile,"%lf",&param->amplituda);
-                            break;
-                        }
-                        case 2:
-                        {
-                            fscanf(pFile,"%lf",&param->fs);
-                            break;
-                        }
-                        case 3:
-                        {
-                            fscanf(pFile,"%lf",&param->fi);
-                            break;
-                        }
-                        case 4:
-                        {
-                            fscanf(pFile,"%lf",&param->fp);
-                            break;
-                        }
-                        case 5:
-                        {
-                            fscanf(pFile,"%lf",&dtab->czas);
-                            break;
-                        }
-                        default:
-                        {
-                            break;
-                        }
-                        }
+                if (znak=='@')
+                {   licznik++;
+                    while (fgetc(pFile)!=':');
+                    fscanf(pFile,"%lf\n",&liczbatym);
+                    printf("paremetry: %lf ",liczbatym);
+                    if (licznik==1){printf("amplituda\n");  param->amplituda=liczbatym;}
+                    if (licznik==2) {printf("fs\n");        param->fs=liczbatym;}
+                    if (licznik==3) {printf("fi\n");        param->fi=liczbatym;}
+                    if (licznik==4) {printf("fp\n");        param->fp=liczbatym;}
+                    if (licznik==5) {printf("czas\n");      dtab->czas=liczbatym;}
 
-                    }
-                    else //jesli nie jest komentarzem i nie zaczyna sie od @
+                }
+                if (znak==':')
+                {
+                    while(fgetc(pFile) != ':');
+                    fscanf(pFile,"%d",&inttym);
+                    while(fgetc(pFile) != ':');
+                    fscanf(pFile,"%lf\n",&liczbatym);
+                    printf("\ndane: %d.%lf",inttym,liczbatym);
+                    push(dtab,liczbatym);
+                }
+
+
+/*
+                if (znak=='@')
+                {
+                    printf("hurrrrrrrrrrrrrrrrra");
+                    licznik++;
+                    while (fgetc(pFile)!=':');
+
+                    switch(licznik)
                     {
-                        fscanf(pFile,"%d\t%lf",&nr_probki,&odczyt);
-                        printf("\n%d\t%lf.%d",nr_probki,odczyt,dtab->pozycja);
-                        push(dtab,odczyt);
-                        dtab->czy_wygenerowany=1;
-                        dtab->czy_parametry=1;
+                    case 1:
+                    {
+                        fscanf(pFile,"%lf",&param->amplituda);
+                        break;
+                    }
+                    case 2:
+                    {
+                        fscanf(pFile,"%lf",&param->fs);
+                        break;
+                    }
+                    case 3:
+                    {
+                        fscanf(pFile,"%lf",&param->fi);
+                        break;
+                    }
+                    case 4:
+                    {
+                        fscanf(pFile,"%lf",&param->fp);
+                        break;
+                    }
+                    case 5:
+                    {
+                        fscanf(pFile,"%lf",&dtab->czas);
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
                     }
                 }
-            }
+                if (znak==':')
+                {
+                    printf("hurrrrrrrrrrrrrrrrra");
+                    fscanf(pFile,"%d\t:%lf",&nr_probki,&odczyt);
+                    printf("\n%d\t%lf.%d",nr_probki,odczyt,dtab->pozycja);
+                    push(dtab,odczyt);
+                    dtab->czy_wygenerowany=1;
+                    dtab->czy_parametry=1;
+                }*/
+           }
+            while (znak!=EOF);
+
             printf("amplituda:                \t%lf\n",param->amplituda);
             printf("czestotliwosc sygnalu:    \t%lf\n",param->fs);
             printf("przesuniecie fazowe:      \t%lf\n",param->fi);
@@ -497,11 +523,11 @@ void zapisz_bufor(parametry *param, dane_tablicy *dtab)
 
             for (i=0; i<dl_sygnalu; i++)
             {
-                fprintf(pFile,"%d\t",i+1);
+                fprintf(pFile,":%d\t",i+1);
                 if (dtab->tab[i]>=0)
-                    fprintf(pFile," %f\n",dtab->tab[i]);
+                    fprintf(pFile," :%f\n",dtab->tab[i]);
                 else
-                    fprintf(pFile,"%lf\n",dtab->tab[i]);
+                    fprintf(pFile,":%lf\n",dtab->tab[i]);
             }
             fclose (pFile);
         }
