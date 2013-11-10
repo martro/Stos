@@ -332,15 +332,15 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
 
         if (pFile!=NULL)
         {
-            fprintf(pFile,"<html>"
-                    "  <head>"
-                    "    <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>"
-                    "    <script type=\"text/javascript\">"
-                    "      google.load(\"visualization\", \"1\", {packages:[\"corechart\"]});"
-                    "      google.setOnLoadCallback(drawChart);"
-                    "      function drawChart() {"
-                    "        var data = google.visualization.arrayToDataTable(["
-                    "          ['Napiece', 'Nr probki'],");
+            fprintf(pFile,"<html>\n"
+                    "  <head>\n"
+                    "    <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n"
+                    "    <script type=\"text/javascript\">\n"
+                    "      google.load(\"visualization\", \"1\", {packages:[\"corechart\"]});\n"
+                    "      google.setOnLoadCallback(drawChart);\n"
+                    "      function drawChart() {\n"
+                    "        var data = google.visualization.arrayToDataTable([\n"
+                    "          ['Napiece', 'Nr probki'],\n");
 
 
             for (i=0; i<dl_sygnalu; i++)
@@ -349,31 +349,23 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
                 fprintf(pFile," %f],\n",dtab->tab[i]);
             }
 
-            /*
-            "          [ 3,10],"
-            "          [ 8,12],"
-            "          [ 4,5.5],"
-            "          [ 11,14],"
-            "          [ 4,5],"
-            "          [ 3,3.5],"
-            "          [ 6.5,7]"*/
-            fprintf(pFile,"        ]);"
-                    "        var options = {"
+            fprintf(pFile,"        ]);\n"
+                    "        var options = {\n"
                     "          title: 'Wykres napiecia od czasu',");
-            fprintf(pFile,"          hAxis: {title: 'Nr probki', minValue: 0, maxValue: %lf},",dtab->czas*param->fp);
-            fprintf(pFile,"          vAxis: {title: 'Napiecie', minValue: %lf, maxValue: %lf},",-param->amplituda,param->amplituda);
-            fprintf(pFile,"          legend: 'none',"
-                    "       pointSize: 1"
-                    "        };"
-                    "        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));"
-                    "        chart.draw(data, options);"
-                    "      }"
-                    "    </script>"
-                    "  </head>"
-                    "  <body>"
-                    "    <div id=\"chart_div\" style=\"width: 900px; height: 500px;\"></div>"
-                    "  </body>"
-                    "</html>");
+            fprintf(pFile,"          hAxis: {title: 'Nr probki', minValue: 0, maxValue: %lf},\n",dtab->czas*param->fp);
+            fprintf(pFile,"          vAxis: {title: 'Napiecie', minValue: %lf, maxValue: %lf},\n",-param->amplituda,param->amplituda);
+            fprintf(pFile,"          legend: 'none',\n"
+                    "       pointSize: 1\n"
+                    "        };\n"
+                    "        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));\n"
+                    "        chart.draw(data, options);\n"
+                    "      }\n"
+                    "    </script>\n"
+                    "  </head>\n"
+                    "  <body>\n"
+                    "    <div id=\"chart_div\" style=\"width: 900px; height: 500px;\"></div>\n"
+                    "  </body>\n"
+                    "</html>\n");
 
             fclose (pFile);
         }
