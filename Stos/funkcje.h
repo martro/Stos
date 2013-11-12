@@ -179,7 +179,9 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
                "\n"
                "7 - ZASZUM SYGNAL\n"
                "8 - ODSZUM SYGNAL\n\n"
-               "9 - GENERUJ WYKRES  [Google Charts]\n"
+               "9 - GENERUJ WYKRES  [Google Charts]\n\n"
+               "0 - ZAKONCZ\n\n"
+
                "WYBOR: ");
         if(scanf("%d",&wybor))   //jezeli odczytane jest liczba
         {
@@ -268,24 +270,82 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
 
 void odszum(parametry *param, dane_tablicy *dtab)
 {
-    int i,j,suma,n;
+    int i,j,suma,n,msc,popr;
 
     n=param->fp*dtab->czas;
+
+    do
+    {
+    printf("PODAJ MIEJSCE (liczba od 1 do 5)");
+    popr=scanf("%d",&msc);
+    fflush(stdin);
+    if (msc<=0 || msc>5)
+        popr=0;
+    }
+    while (popr==0);
+
+
+    if (msc==1)
+    {
+        suma=0;
+        suma=0;
+        for (i=(n-1);i<=(n-2);i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/2.,n-1);
+    }
+
+    if (msc==2)
+    {
+        suma=0;
+        for (i=0;i<=1;i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/2.,0);
+        suma=0;
+        for (i=(n-1);i<=(n-3);i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/3.,n-2);
+    }
+    if (msc==3)
+    {
+        suma=0;
+        for (i=0;i<=2;i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/3.,0);
+        suma=0;
+        for (i=(n-1);i<=(n-5);i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/5.,n-3);
+    }
+    if (msc==4)
+    {
+        suma=0;
+        for (i=0;i<=4;i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/5.,0);
+        suma=0;
+        for (i=(n-2);i<=(n-6);i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/2.,n-4);
+    }
+    if (msc==5)
+    {
+        for (i=1;i<=5;i++)
+            suma+=at(dtab,i);
+        pushat(dtab,suma/5.,0);
+    }
 
     pushat(dtab,(at(dtab,0)+at(dtab,1))/2.,0);
     pushat(dtab,(at(dtab,0)+at(dtab,1)+at(dtab,2)/3.),1);
 
-    for (i=2;i<=(n-3);i++)
+    for (i=(msc-1);i<=(n-6+msc);i++)
     {
         suma=0;
-        for(j=(i-2);j<=(i+2);j++)
+        for(j=(1-msc);j<=(5-msc);j++)
             {
-                suma+=at(dtab,j);
+                suma+=at(dtab,i+j);
             }
         pushat(dtab,suma/5.,i);
     }
-    pushat(dtab,(at(dtab,n-3)+at(dtab,n-2)+at(dtab,n-1)/3.),n-2);
-    pushat(dtab,(at(dtab,n-2)+at(dtab,n-1))/2.,n-1);
 }
 
 void podkreslenie(void)
