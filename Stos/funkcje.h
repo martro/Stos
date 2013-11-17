@@ -34,6 +34,7 @@ typedef struct
     int czy_parametry;
 } dane_tablicy;
 
+int blad_parametry(int popr);
 double at(dane_tablicy *dtab,int pozycja);
 void funkcja_menu_01();
 void funkcja_menu_02();
@@ -59,6 +60,17 @@ void wyswietlanie(parametry *param,dane_tablicy *dtab);
 void zapisz_bufor(parametry *param, dane_tablicy *dtab);
 void zaszum(parametry *param, dane_tablicy *dtab);
 void zatwierdz(void);
+
+int blad_parametry (int popr)
+{
+    if (popr==0)
+    {
+        printf("Niepoprawne dane wejsciowe. Wpisz ponownie.\n");
+        while((getchar()) != '\n');
+        return 1;
+    }
+    else return 0;
+}
 
 double at(dane_tablicy *dtab,int pozycja)
 {
@@ -274,78 +286,82 @@ void odszum(parametry *param, dane_tablicy *dtab)
 
     n=param->fp*dtab->czas;
 
-    do
+    if (dtab->czy_wygenerowany==1)
     {
-    printf("PODAJ MIEJSCE (liczba od 1 do 5)");
-    popr=scanf("%d",&msc);
-    fflush(stdin);
-    if (msc<=0 || msc>5)
-        popr=0;
-    }
-    while (popr==0);
+        do
+        {
+            printf("PODAJ MIEJSCE (liczba od 1 do 5)");
+            popr=scanf("%d",&msc);
+            fflush(stdin);
+            if (msc<=0 || msc>5)
+                popr=0;
+        }
+        while (popr==0);
 
 
-    if (msc==1)
-    {
-        suma=0;
-        suma=0;
-        for (i=(n-1);i<=(n-2);i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/2.,n-1);
-    }
+        if (msc==1)
+        {
+            suma=0;
+            suma=0;
+            for (i=(n-1); i<=(n-2); i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/2.,n-1);
+        }
 
-    if (msc==2)
-    {
-        suma=0;
-        for (i=0;i<=1;i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/2.,0);
-        suma=0;
-        for (i=(n-1);i<=(n-3);i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/3.,n-2);
-    }
-    if (msc==3)
-    {
-        suma=0;
-        for (i=0;i<=2;i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/3.,0);
-        suma=0;
-        for (i=(n-1);i<=(n-5);i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/5.,n-3);
-    }
-    if (msc==4)
-    {
-        suma=0;
-        for (i=0;i<=4;i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/5.,0);
-        suma=0;
-        for (i=(n-2);i<=(n-6);i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/2.,n-4);
-    }
-    if (msc==5)
-    {
-        for (i=1;i<=5;i++)
-            suma+=at(dtab,i);
-        pushat(dtab,suma/5.,0);
-    }
+        if (msc==2)
+        {
+            suma=0;
+            for (i=0; i<=1; i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/2.,0);
+            suma=0;
+            for (i=(n-1); i<=(n-3); i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/3.,n-2);
+        }
+        if (msc==3)
+        {
+            suma=0;
+            for (i=0; i<=2; i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/3.,0);
+            suma=0;
+            for (i=(n-1); i<=(n-5); i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/5.,n-3);
+        }
+        if (msc==4)
+        {
+            suma=0;
+            for (i=0; i<=4; i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/5.,0);
+            suma=0;
+            for (i=(n-2); i<=(n-6); i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/2.,n-4);
+        }
+        if (msc==5)
+        {
+            for (i=1; i<=5; i++)
+                suma+=at(dtab,i);
+            pushat(dtab,suma/5.,0);
+        }
 
-    pushat(dtab,(at(dtab,0)+at(dtab,1))/2.,0);
-    pushat(dtab,(at(dtab,0)+at(dtab,1)+at(dtab,2)/3.),1);
+        pushat(dtab,(at(dtab,0)+at(dtab,1))/2.,0);
+        pushat(dtab,(at(dtab,0)+at(dtab,1)+at(dtab,2)/3.),1);
 
-    for (i=(msc-1);i<=(n-6+msc);i++)
-    {
-        suma=0;
-        for(j=(1-msc);j<=(5-msc);j++)
+        for (i=(msc-1); i<=(n-6+msc); i++)
+        {
+            suma=0;
+            for(j=(1-msc); j<=(5-msc); j++)
             {
                 suma+=at(dtab,i+j);
             }
-        pushat(dtab,suma/5.,i);
-    }
+            pushat(dtab,suma/5.,i);
+        }
+    } else
+    printf("\nW BUFORZE NIE MA SYGNALU!\n");
 }
 
 void podkreslenie(void)
@@ -359,6 +375,7 @@ double push(dane_tablicy *dtab, double wartosc)
     {
         dtab->tab = ((double *)malloc(sizeof(double) * ROZMIAR_POCZ));
         dtab->rozmiar=ROZMIAR_POCZ;
+        dtab->pozycja=0;
     }
     if (dtab->pozycja >= dtab->rozmiar)
     {
@@ -405,7 +422,7 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
 
             for (i=0; i<dl_sygnalu; i++)
             {
-                fprintf(pFile,"[%d,",i+1);
+                fprintf(pFile,"[%d,",i);
                 fprintf(pFile," %f],\n",dtab->tab[i]);
             }
 
@@ -437,18 +454,61 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
 
 void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
 {
+    int popr;
     podkreslenie();
     printf("PODAJ PARAMETRY SYGNALU\n");
-    printf("amplituda: ");
-    scanf("%lf",&param->amplituda);
-    printf("czestotliwosc sygnalu: ");
-    scanf("%lf",&param->fs);
-    printf("przesuniecie fazowe: ");
-    scanf("%lf",&param->fi);
-    printf("czestotliwosc probkowania: ");
-    scanf("%lf",&param->fp);
-    printf("czas sygnalu: ");
-    scanf("%lf",&dtab->czas);
+
+    do
+    {
+        popr=1;
+        printf("amplituda: ");
+        popr=scanf("%lf",&param->amplituda);
+        if (param->amplituda<=0)
+            popr=0;
+
+    }
+    while(blad_parametry(popr));
+
+    do
+    {
+        popr=1;
+        printf("czestotliwosc sygnalu: ");
+        popr=scanf("%lf",&param->fs);
+        if (param->fs<=0)
+            popr=0;
+
+    }
+    while(blad_parametry(popr));
+
+    do
+    {
+        popr=1;
+        printf("przesuniecie fazowe: ");
+        popr=scanf("%lf",&param->fi);
+    }
+    while(blad_parametry(popr));
+
+    do
+    {
+        popr=1;
+        printf("czestotliwosc probkowania: ");
+        popr=scanf("%lf",&param->fp);
+        if (param->fp<=0)
+            popr=0;
+
+    }
+    while(blad_parametry(popr));
+
+    do
+    {
+        popr=1;
+        printf("czas sygnalu: ");
+        popr=scanf("%lf",&dtab->czas);
+        if (dtab->czas<=0)
+            popr=0;
+
+    }
+    while(blad_parametry(popr));
 
     dtab->czy_parametry=1;
 
@@ -505,15 +565,36 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
                     printf("koment\n");
                 }
                 if (znak=='@')
-                {   licznik++;
+                {
+                    licznik++;
                     while (fgetc(pFile)!=':');
                     fscanf(pFile,"%lf\n",&liczbatym);
                     printf("paremetry: %lf ",liczbatym);
-                    if (licznik==1){printf("amplituda\n");  param->amplituda=liczbatym;}
-                    if (licznik==2) {printf("fs\n");        param->fs=liczbatym;}
-                    if (licznik==3) {printf("fi\n");        param->fi=liczbatym;}
-                    if (licznik==4) {printf("fp\n");        param->fp=liczbatym;}
-                    if (licznik==5) {printf("czas\n");      dtab->czas=liczbatym;}
+                    if (licznik==1)
+                    {
+                        printf("amplituda\n");
+                        param->amplituda=liczbatym;
+                    }
+                    if (licznik==2)
+                    {
+                        printf("fs\n");
+                        param->fs=liczbatym;
+                    }
+                    if (licznik==3)
+                    {
+                        printf("fi\n");
+                        param->fi=liczbatym;
+                    }
+                    if (licznik==4)
+                    {
+                        printf("fp\n");
+                        param->fp=liczbatym;
+                    }
+                    if (licznik==5)
+                    {
+                        printf("czas\n");
+                        dtab->czas=liczbatym;
+                    }
 
                 }
                 if (znak==':')
@@ -528,7 +609,7 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
 
 
 
-           }
+            }
             while (znak!=EOF);
 
             printf("amplituda:                \t%lf\n",param->amplituda);
@@ -614,29 +695,31 @@ void zaszum(parametry *param, dane_tablicy *dtab)
     int i,popr;
     double amplituda_szumu,szum;
 
-        if (dtab->czy_wygenerowany)
+    if (dtab->czy_wygenerowany)
     {
-    printf("\nDODAWANIE SZUMU\n\n"
-           "Ustaw parametry\n");
-           do
-           {
-           popr=0;
-           fflush(stdin);
-           printf("Podaj amplitude szumu jako procent amplitudy sygnalu: ");
-           popr=scanf("%lf",&amplituda_szumu);
+        printf("\nDODAWANIE SZUMU\n\n"
+               "Ustaw parametry\n");
+        do
+        {
+            popr=0;
+            fflush(stdin);
+            printf("Podaj amplitude szumu jako procent amplitudy sygnalu: ");
+            popr=scanf("%lf",&amplituda_szumu);
 
-           } while((amplituda_szumu<0) || (popr==0));
+        }
+        while((amplituda_szumu<0) || (popr==0));
 
 
-          for (i=0;i<(param->fp*dtab->czas);i++)
-          {
+        for (i=0; i<(param->fp*dtab->czas); i++)
+        {
             szum=rand()%1000;
             szum=param->amplituda*(szum/500-1)*amplituda_szumu/100;
             pushat(dtab,at(dtab,i)+szum,i);
             printf("%lf\n",at(dtab,i));
-          }
-    } else
-    printf("\nSygnal nie zostal jeszcze wygenerowany. Nie mozna zaszumic.\n");
+        }
+    }
+    else
+        printf("\nSygnal nie zostal jeszcze wygenerowany. Nie mozna zaszumic.\n");
 
 }
 
