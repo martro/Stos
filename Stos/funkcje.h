@@ -178,7 +178,7 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
     do
     {
         blad_odczytu=1;
-        fflush(stdin);
+    while((getchar()) != '\n');
         podkreslenie();
         printf("WYBOR AKCJI PROGRAMU\n"
                "1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
@@ -292,7 +292,7 @@ void odszum(parametry *param, dane_tablicy *dtab)
         {
             printf("PODAJ MIEJSCE (liczba od 1 do 5)");
             popr=scanf("%d",&msc);
-            fflush(stdin);
+    while((getchar()) != '\n');
             if (msc<=0 || msc>5)
                 popr=0;
         }
@@ -360,6 +360,7 @@ void odszum(parametry *param, dane_tablicy *dtab)
             }
             pushat(dtab,suma/5.,i);
         }
+    printf("\nSygnal odszumiony.\n");
     } else
     printf("\nW BUFORZE NIE MA SYGNALU!\n");
 }
@@ -402,9 +403,8 @@ void rysuj_wykres(parametry *param, dane_tablicy *dtab)
 
     if (dtab->czy_wygenerowany)
     {
-        printf("\nPODAJ NAZWE PLIKU: ");
+        printf("\nPODAJ NAZWE PLIKU (rozszeszenie .html): ");
         scanf("%s",nazwa);
-        printf("%s",nazwa);
         pFile = fopen (nazwa,"w");
 
         if (pFile!=NULL)
@@ -546,7 +546,6 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
     {
         printf("\nPODAJ NAZWE PLIKU: ");
         scanf("%s",nazwa);
-        printf("%s",nazwa);
         pFile = fopen (nazwa,"r");
 
 
@@ -562,7 +561,7 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
                 if (znak=='*')
                 {
                     while (fgetc(pFile)!='\n');
-                    printf("koment\n");
+                    printf("\nkoment");
                 }
                 if (znak=='@')
                 {
@@ -612,17 +611,19 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
             }
             while (znak!=EOF);
 
-            printf("amplituda:                \t%lf\n",param->amplituda);
+            printf("\n\namplituda:              \t%lf\n",param->amplituda);
             printf("czestotliwosc sygnalu:    \t%lf\n",param->fs);
             printf("przesuniecie fazowe:      \t%lf\n",param->fi);
             printf("czestotliwosc probkowania:\t%lf\n",param->fp);
             printf("czas sygnalu:             \t%lf\n",dtab->czas);
             fclose (pFile);
-            printf("dtab: %d, %d",dtab->pozycja,dtab->rozmiar);
             dtab->czy_wygenerowany=1;
             dtab->czy_parametry=1;
-        }
-    }
+        }else
+    printf("\nBLAD ODCZYTU PLIKU. (niepoprawnie wpisana nazwa lub plik nie istnieje)\n");
+    } else
+    printf("\nW buforze znajduje sie juz sygnal. Aby wczytac nowy usun poprzedni.\n");
+
 
 }
 
@@ -656,7 +657,7 @@ void zapisz_bufor(parametry *param, dane_tablicy *dtab)
 
     if (dtab->czy_wygenerowany)
     {
-        printf("\nPODAJ NAZWE PLIKU: ");
+        printf("\nPODAJ NAZWE PLIKU (rozszerzenie: .txt): ");
         scanf("%s",nazwa);
         printf("%s",nazwa);
         pFile = fopen (nazwa,"w");
@@ -702,7 +703,7 @@ void zaszum(parametry *param, dane_tablicy *dtab)
         do
         {
             popr=0;
-            fflush(stdin);
+    while((getchar()) != '\n');
             printf("Podaj amplitude szumu jako procent amplitudy sygnalu: ");
             popr=scanf("%lf",&amplituda_szumu);
 
@@ -726,7 +727,6 @@ void zaszum(parametry *param, dane_tablicy *dtab)
 void zatwierdz(void)
 {
     printf("\nNacisnij enter.\n");
-    fflush(stdin);
-    getchar();
+    while((getchar()) != '\n');
 }
 #endif // FUNKCJE_H_INCLUDED

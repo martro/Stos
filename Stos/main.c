@@ -23,8 +23,9 @@ int main(void)
 
     do
     {
-        zatwierdz();
+
         dzialaj=menu_glowne(param,dtab);
+        zatwierdz();
     }
     while (dzialaj);
 
