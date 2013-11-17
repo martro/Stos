@@ -18,6 +18,7 @@ int main(void)
 
     printf("Laboratorium Programowanie w C\n"
            "Program generujacy sygnaly\n"
+           "Prowadzacy: mgr inz. Mariusz Ostrowski\n"
            "Marcin Trojan 205608 MTR W-10\n");
 
 
@@ -30,8 +31,8 @@ int main(void)
     while (dzialaj);
 
 
-free(dtab);
-free(param);
+    free(dtab);
+    free(param);
     return 0;
 }
 

@@ -1,6 +1,7 @@
 /**
 *Laboratorium Programowanie w C
 *Program generujacy sygnaly
+*Prowadzacy: mgr inz. Mariusz Ostrowski
 *Marcin Trojan 205608 MTR W-10
     */
 
@@ -178,7 +179,7 @@ int menu_glowne(parametry *param,dane_tablicy *dtab)
     do
     {
         blad_odczytu=1;
-    while((getchar()) != '\n');
+        while((getchar()) != '\n');
         podkreslenie();
         printf("WYBOR AKCJI PROGRAMU\n"
                "1 - WYSWIETL SYGNAL ZNAJDUJACY SIE W BUFORZE\n"
@@ -290,9 +291,9 @@ void odszum(parametry *param, dane_tablicy *dtab)
     {
         do
         {
-            printf("PODAJ MIEJSCE (liczba od 1 do 5)");
+            while((getchar()) != '\n');
+            printf("PODAJ MIEJSCE (liczba od 1 do 5):");
             popr=scanf("%d",&msc);
-    while((getchar()) != '\n');
             if (msc<=0 || msc>5)
                 popr=0;
         }
@@ -360,9 +361,10 @@ void odszum(parametry *param, dane_tablicy *dtab)
             }
             pushat(dtab,suma/5.,i);
         }
-    printf("\nSygnal odszumiony.\n");
-    } else
-    printf("\nW BUFORZE NIE MA SYGNALU!\n");
+        printf("\nSygnal odszumiony.\n");
+    }
+    else
+        printf("\nW BUFORZE NIE MA SYGNALU!\n");
 }
 
 void podkreslenie(void)
@@ -511,14 +513,6 @@ void ustaw_parametry_sygnalu(parametry *param, dane_tablicy *dtab)
     while(blad_parametry(popr));
 
     dtab->czy_parametry=1;
-
-    /*
-    dtab->czas=2;
-    param->amplituda=5;
-    param->fi=0;
-    param->fp=100;
-    param->fs=1;*/
-
 }
 
 void usun_tab(dane_tablicy *dtab)
@@ -538,8 +532,8 @@ void usun_tab(dane_tablicy *dtab)
 void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
 {
     char nazwa[NAZWA_PLIKU],znak;
-    int licznik=0,nr_probki,inttym;
-    double odczyt, liczbatym;
+    int licznik=0,inttym;
+    double liczbatym;
     dtab->pozycja=0;
     FILE * pFile;
     if ((dtab->czy_wygenerowany)==0)
@@ -619,10 +613,12 @@ void wczytaj_z_pliku(parametry *param, dane_tablicy *dtab)
             fclose (pFile);
             dtab->czy_wygenerowany=1;
             dtab->czy_parametry=1;
-        }else
-    printf("\nBLAD ODCZYTU PLIKU. (niepoprawnie wpisana nazwa lub plik nie istnieje)\n");
-    } else
-    printf("\nW buforze znajduje sie juz sygnal. Aby wczytac nowy usun poprzedni.\n");
+        }
+        else
+            printf("\nBLAD ODCZYTU PLIKU. (niepoprawnie wpisana nazwa lub plik nie istnieje)\n");
+    }
+    else
+        printf("\nW buforze znajduje sie juz sygnal. Aby wczytac nowy usun poprzedni.\n");
 
 
 }
@@ -703,7 +699,7 @@ void zaszum(parametry *param, dane_tablicy *dtab)
         do
         {
             popr=0;
-    while((getchar()) != '\n');
+            while((getchar()) != '\n');
             printf("Podaj amplitude szumu jako procent amplitudy sygnalu: ");
             popr=scanf("%lf",&amplituda_szumu);
 
